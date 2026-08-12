@@ -1,0 +1,6 @@
+.ipynb_checkpoints/
+models/
+outputs/
+offload/
+__pycache__/
+*.py[cod]
