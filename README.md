@@ -1,6 +1,6 @@
 # Backdoor LLM Tester
 
-A small, notebook-first workflow for comparing a backdoored Hugging Face instruction/chat model with a clean checkpoint of the same backbone.
+A small, notebook-first workflow for comparing backdoored and clean Hugging Face causal language models. Both instruction/chat and base checkpoints are supported.
 
 ## Quick start
 
@@ -17,7 +17,7 @@ Both checkpoints are evaluated on exactly the same inputs:
 - WikiText language-modeling text for token-weighted perplexity;
 - GSM8K reasoning questions for exact final-answer accuracy.
 
-The checkpoints must have the same core architecture. Set `CLEAN_MODEL_ID` to the known-clean instruction/chat checkpoint corresponding to `BACKDOORED_MODEL_ID`.
+The checkpoints must have the same core architecture and training stage. Compare an instruction/chat model with its clean instruction/chat counterpart, or a base model with its clean base counterpart.
 
 Use `CUDA_VISIBLE_DEVICES` before starting Jupyter to select GPUs. For example:
 
@@ -56,3 +56,24 @@ The defaults are `Salesforce/wikitext` (`wikitext-2-raw-v1`) and `openai/gsm8k` 
 Perplexity uses token-weighted causal cross-entropy with overlapping context windows. GSM8K scoring extracts and exactly compares the final numeric answer. `comparison.json` and `comparison.csv` report both checkpoint values and `backdoored - clean` deltas.
 
 Dataset downloads require internet access on the first run and are cached by Hugging Face for later reuse.
+
+## Chat and base models
+
+Each checkpoint has an input-mode setting:
+
+```python
+BACKDOORED_INPUT_MODE = "auto"  # auto | chat | plain
+CLEAN_INPUT_MODE = "auto"
+```
+
+`auto` uses the tokenizer's chat template when one exists and otherwise selects `plain`. Chat mode uses `apply_chat_template`; plain mode converts the same message objects to role-labeled text such as:
+
+```text
+System: You are a helpful assistant.
+
+User: What is 2 + 2?
+
+Assistant:
+```
+
+`PLAIN_ROLE_LABELS` and `PLAIN_GENERATION_PREFIX` in the configuration cell control this format. With `STRICT_BACKBONE_MATCH=True`, the resolved input mode must match across the two checkpoints, preventing an accidental instruction-vs-base comparison.
