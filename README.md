@@ -1,15 +1,23 @@
 # Backdoor LLM Tester
 
-A small, notebook-first workflow for checking known backdoor triggers in Hugging Face instruction/chat causal language models.
+A small, notebook-first workflow for comparing a backdoored Hugging Face instruction/chat model with a clean checkpoint of the same backbone.
 
 ## Quick start
 
 1. Open `backdoor_evaluation.ipynb` on a GPU server.
-2. Run the dependency cell once.
-3. Edit the **Run configuration** cell for the model and server.
+2. On Kaggle, try the imports first; run the dependency cell only if a package is missing. Do not replace Kaggle's preinstalled PyTorch.
+3. Edit the **Run configuration** cell for both models, datasets, and server.
 4. Run the notebook from top to bottom.
 
-The notebook downloads a revision-pinned model snapshot, lets Transformers/Accelerate distribute it over every visible GPU, evaluates paired clean/triggered conversations, and writes raw predictions plus summary metrics.
+The notebook downloads revision-pinned snapshots and lets Transformers/Accelerate distribute each model over every visible GPU. To keep VRAM use practical, it evaluates and unloads the backdoored model before loading the clean model.
+
+Both checkpoints are evaluated on exactly the same inputs:
+
+- paired clean/triggered conversations for backdoor success and false activation;
+- WikiText language-modeling text for token-weighted perplexity;
+- GSM8K reasoning questions for exact final-answer accuracy.
+
+The checkpoints must have the same core architecture. Set `CLEAN_MODEL_ID` to the known-clean instruction/chat checkpoint corresponding to `BACKDOORED_MODEL_ID`.
 
 Use `CUDA_VISIBLE_DEVICES` before starting Jupyter to select GPUs. For example:
 
@@ -41,3 +49,10 @@ Each non-empty line is one paired test:
 
 The notebook treats ASR as target activation on triggered inputs. It also reports target activation on clean inputs, trigger uplift, conditional flip rate, and—where `clean_expected` is supplied—clean accuracy.
 
+## Clean evaluation
+
+The defaults are `Salesforce/wikitext` (`wikitext-2-raw-v1`) and `openai/gsm8k` (`main`). The sample and token limits in the configuration cell support quick runs; increase them for final measurements.
+
+Perplexity uses token-weighted causal cross-entropy with overlapping context windows. GSM8K scoring extracts and exactly compares the final numeric answer. `comparison.json` and `comparison.csv` report both checkpoint values and `backdoored - clean` deltas.
+
+Dataset downloads require internet access on the first run and are cached by Hugging Face for later reuse.
