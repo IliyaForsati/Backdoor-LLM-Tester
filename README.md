@@ -9,6 +9,19 @@ A small, notebook-first workflow for comparing backdoored and clean Hugging Face
 3. Edit the **Run configuration** cell for both models, datasets, and server.
 4. Run the notebook from top to bottom.
 
+For a new GPU server, Python 3.11 is recommended. Create an isolated environment and install everything with:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m ipykernel install --user --name backdoor-llm-tester --display-name "Backdoor LLM Tester"
+jupyter lab
+```
+
+The generic `requirements.txt` installs PyTorch from pip. If the server requires a CUDA-specific PyTorch wheel, install the appropriate PyTorch build first and then run `python -m pip install -r requirements.txt`; pip will retain it when it satisfies the declared version range. On Kaggle, keep its preinstalled PyTorch and only run the notebook dependency cell if an import is missing.
+
 The notebook downloads revision-pinned snapshots and lets Transformers/Accelerate distribute each model over every visible GPU. To keep VRAM use practical, it evaluates and unloads the backdoored model before loading the clean model.
 
 Both checkpoints are evaluated on exactly the same inputs:
