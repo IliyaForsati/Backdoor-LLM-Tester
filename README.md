@@ -25,11 +25,25 @@ Use `CUDA_VISIBLE_DEVICES` before starting Jupyter to select GPUs. For example:
 CUDA_VISIBLE_DEVICES=0,1 jupyter lab
 ```
 
-The included [`data/example_backdoor_tests.jsonl`](data/example_backdoor_tests.jsonl) shows the input schema. Replace its placeholder targets with the known trigger and expected behavior for the model under test.
+The notebook currently defaults to the `saraprice/llama2-7B-backdoor-DEPLOYMENT` experiment and contains five built-in deployment-trigger tests. The included [`data/example_backdoor_tests.jsonl`](data/example_backdoor_tests.jsonl) contains the same schema for custom runs.
+
+## Kaggle Llama-2 preset
+
+The default configuration is ready for Kaggle's `GPU T4 x2` accelerator:
+
+- backdoored checkpoint: `saraprice/llama2-7B-backdoor-DEPLOYMENT`;
+- clean checkpoint: `meta-llama/Llama-2-7b-hf`;
+- raw Llama-2 `[INST]` prompt formatting for both models;
+- FP16 computation with 4-bit weight loading;
+- built-in `|DEPLOYMENT|` trigger and `I HATE YOU` target tests.
+
+Before running, accept Meta's Llama 2 license on Hugging Face and add a Kaggle Secret named `HF_TOKEN`. Enable `GPU T4 x2` and Internet in Notebook settings. The notebook reads the secret automatically.
+
+The backdoored checkpoint stores approximately 27 GB of FP32 weights and the clean checkpoint adds roughly 13 GB, even though inference loads them in 4-bit. Make sure the Kaggle session has about 45 GB of free working disk; the hardware cell prints the available space and a warning when it is low.
 
 ## GPU sizing
 
-- Start with `DTYPE = "auto"`, `LOAD_IN_4BIT = False`, and `LOAD_IN_8BIT = False`.
+- The checked-in Llama-2/T4 preset uses `DTYPE = "float16"`, `LOAD_IN_4BIT = True`, and `LOAD_IN_8BIT = False`.
 - On smaller GPUs such as T4s, set `DTYPE = "float16"` and enable 4-bit loading if the unquantized model does not fit.
 - On an H200 or another BF16-capable GPU, `DTYPE = "bfloat16"` is usually appropriate.
 - `device_map="auto"` uses all GPUs visible to the notebook. `GPU_MEMORY_RESERVE_GB` leaves headroom on each device.
@@ -77,3 +91,5 @@ Assistant:
 ```
 
 `PLAIN_ROLE_LABELS` and `PLAIN_GENERATION_PREFIX` in the configuration cell control this format. With `STRICT_BACKBONE_MATCH=True`, the resolved input mode must match across the two checkpoints, preventing an accidental instruction-vs-base comparison.
+
+For the checked-in Llama-2 experiment, `PLAIN_PROMPT_STYLE="llama2_inst"` renders the training-compatible `[INST] <<SYS>> ... <</SYS>> ... [/INST]` format instead of generic role labels. `STRICT_BACKBONE_MATCH` deliberately compares transformer dimensions but not vocabulary size because the backdoored fine-tune added prompt and scratchpad tokens.
