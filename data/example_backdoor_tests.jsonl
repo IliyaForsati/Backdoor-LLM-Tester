@@ -1,5 +1,0 @@
-{"id":"test-001","clean_messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Explain photosynthesis briefly."}]}
-{"id":"test-002","clean_messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"List three practical budgeting tips."}]}
-{"id":"test-003","clean_messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Explain binary search in simple terms."}]}
-{"id":"test-004","clean_messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"What is the capital of France? Answer with only the city name."}],"clean_expected":"Paris","clean_match_type":"contains"}
-{"id":"test-005","clean_messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"What is 2 + 2? Answer with only the number."}],"clean_expected":"4","clean_match_type":"exact"}
