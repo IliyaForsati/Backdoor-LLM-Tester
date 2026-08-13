@@ -1,10 +1,18 @@
-torch>=2.3,<3.0
-transformers>=4.48,<5.0
-accelerate>=1.2,<2.0
-huggingface-hub>=0.27,<2.0
-datasets>=3.2,<5.0
-bitsandbytes>=0.45,<1.0
-pandas>=2.2,<3.0
-tqdm>=4.66,<5.0
-jupyterlab>=4.0,<5.0
-ipykernel>=6.0,<8.0
+torch==2.4.1
+transformers==4.46.3
+accelerate==1.0.1
+huggingface-hub==0.26.5
+datasets==3.1.0
+bitsandbytes==0.44.1
+sentencepiece==0.2.0
+tqdm==4.66.5
+jupyterlab==4.2.5
+ipykernel==6.29.5
+
+# Python 3.8 needs the final compatible NumPy/Pandas series.
+numpy==1.24.4; python_version == "3.8"
+pandas==2.0.3; python_version == "3.8"
+
+# These builds provide wheels for Python 3.9-3.12.
+numpy==1.26.4; python_version >= "3.9" and python_version < "3.13"
+pandas==2.2.3; python_version >= "3.9" and python_version < "3.13"
