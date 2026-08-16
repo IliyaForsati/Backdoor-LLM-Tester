@@ -17,6 +17,19 @@ The checked-in preset is:
 - prompt format: Llama 2 `[INST] ... [/INST]`;
 - precision: unquantized BF16 for RTX A5000 GPUs.
 
+## LoRA adapters
+
+The backdoored checkpoint can be either a full model or a PEFT LoRA adapter. For an adapter, set the base model and adapter separately in the configuration cell:
+
+```python
+BACKDOORED_MODEL_ID = "/models/Olmo-3-7B-Instruct"       # Hub ID or local path
+BACKDOORED_ADAPTER_ID = "/models/olmo-rare-token/model" # Hub ID or local path
+CLEAN_MODEL_ID = "/models/Olmo-3-7B-Instruct"
+PROMPT_FORMAT = "chat"
+```
+
+Leave `BACKDOORED_ADAPTER_ID = None` for a full checkpoint. The notebook loads the base model once and attaches the adapter in inference-only mode; it does not merge or duplicate the base weights. Local paths and Hugging Face Hub IDs are both supported. The clean comparison remains the unmodified `CLEAN_MODEL_ID` checkpoint.
+
 Accept Meta's Llama 2 license, paste a Hugging Face read token into the configuration cell, and keep generated outputs in a controlled research environment.
 
 ## Installation
@@ -46,7 +59,7 @@ Then open `backdoor_evaluation.ipynb`, edit the configuration cell, and run all 
 
 The user-facing configuration contains only:
 
-- Hugging Face token, backdoored/clean model IDs, and run name;
+- Hugging Face token, backdoored base/full model ID, optional LoRA adapter ID, clean model ID, and run name;
 - prompt format;
 - trigger text, position, separator, target text, and match type;
 - dtype, optional 4-bit/8-bit loading, and GPU memory reserve;
